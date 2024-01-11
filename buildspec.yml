@@ -12,19 +12,11 @@ phases:
       - curl -o aws-iam-authenticator https://amazon-eks.s3.us-west-2.amazonaws.com/1.21.2/2021-07-05/bin/linux/amd64/aws-iam-authenticator
       - chmod +x ./aws-iam-authenticator
       - mv ./aws-iam-authenticator /usr/local/bin
-      # Install Clair scanner
-      - echo Installing Clair scanner...
-      - curl -L https://github.com/arminc/clair-scanner/releases/download/v12/clair-scanner_linux_amd64 > clair-scanner
-      - chmod +x clair-scanner
-      - mv clair-scanner /usr/local/bin
 
   pre_build:
     commands:
       - echo Logging in to Amazon ECR...
       - aws --version
-      # Start Clair vulnerability database update (optional, depends on your Clair setup)
-#      - echo Updating Clair vulnerability database...
-#      - <command-to-update-clair-db>
 
   build:
     commands:
@@ -33,8 +25,6 @@ phases:
       - echo dckr_pat_5IyhSP4dCDWcSgU9hYDp1Z3Et9o | docker login --username alnafidocker --password-stdin
       - docker build -t clair-codepipeline-ecrdockerrepository-xhv3wpsqdpjc .
       - docker tag clair-codepipeline-ecrdockerrepository-xhv3wpsqdpjc:latest 587027614473.dkr.ecr.us-east-1.amazonaws.com/clair-codepipeline-ecrdockerrepository-xhv3wpsqdpjc:latest
-#      - docker build -t cicd-integrate-clair_and_ecr . 
-#      - docker tag cicd-integrate-clair_and_ecr:latest 587027614473.dkr.ecr.us-east-1.amazonaws.com/cicd-integrate-clair_and_ecr:latest
 
   post_build:
     commands:
@@ -42,10 +32,6 @@ phases:
       - echo Pushing the Docker image...
       - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 587027614473.dkr.ecr.us-east-1.amazonaws.com
       - docker push 587027614473.dkr.ecr.us-east-1.amazonaws.com/clair-codepipeline-ecrdockerrepository-xhv3wpsqdpjc:latest || (echo "docker push failed" && exit 1)
-      # Scan the image with Clair
-#      - echo Scanning the Docker image with Clair...
-#      - clair-scanner --ip 54.209.191.96 -r clair_report.json -l clair_log.json --threshold="Low" 587027614473.dkr.ecr.us-east-1.amazonaws.com/cicd-integrate-clair_and_ecr:latest || (echo "clair-scanner failed" && exit 1)
-#      - echo Clair scanning completed
       - echo Updating kubeconfig...
       - aws eks update-kubeconfig --region us-east-1 --name eks
       - kubectl config current-context
