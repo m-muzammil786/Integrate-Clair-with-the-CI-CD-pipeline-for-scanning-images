@@ -22,17 +22,22 @@ phases:
     commands:
       - echo Build started on `date`
       - echo Building the Docker image...
+      # Change Dockerhub Access Tokens and User name
       - echo dckr_pat_5IyhSP4dCDWcSgU9hYDp1Z3Et9o | docker login --username alnafidocker --password-stdin
-      - docker build -t clair-codepipeline-ecrdockerrepository-xhv3wpsqdpjc .
-      - docker tag clair-codepipeline-ecrdockerrepository-xhv3wpsqdpjc:latest 587027614473.dkr.ecr.us-east-1.amazonaws.com/clair-codepipeline-ecrdockerrepository-xhv3wpsqdpjc:latest
+      # Change Docker Build and Tag Command
+      - docker build -t cicd-image-scanning-ecrdockerrepository-yhtgh5pmm1oj .
+      - docker tag cicd-image-scanning-ecrdockerrepository-yhtgh5pmm1oj:latest 587027614473.dkr.ecr.us-east-1.amazonaws.com/cicd-image-scanning-ecrdockerrepository-yhtgh5pmm1oj:latest
 
   post_build:
     commands:
       - echo Build completed on `date`
       - echo Pushing the Docker image...
+      # Change Docker login Command
       - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 587027614473.dkr.ecr.us-east-1.amazonaws.com
-      - docker push 587027614473.dkr.ecr.us-east-1.amazonaws.com/clair-codepipeline-ecrdockerrepository-xhv3wpsqdpjc:latest || (echo "docker push failed" && exit 1)
+      # Change Docker puch command
+      - docker push 587027614473.dkr.ecr.us-east-1.amazonaws.com/cicd-image-scanning-ecrdockerrepository-yhtgh5pmm1oj:latest || (echo "docker push failed" && exit 1)
       - echo Updating kubeconfig...
+      # Change Cluster Name and region
       - aws eks update-kubeconfig --region us-east-1 --name eks
       - kubectl config current-context
       - kubectl get nodes
