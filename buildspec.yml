@@ -44,7 +44,7 @@ phases:
       - docker push 587027614473.dkr.ecr.us-east-1.amazonaws.com/clair-codepipeline-ecrdockerrepository-xhv3wpsqdpjc:latest || (echo "docker push failed" && exit 1)
       # Scan the image with Clair
       - echo Scanning the Docker image with Clair...
-      - clair-scanner --ip 54.209.191.96 -r clair_report.json -l clair_log.json --threshold="Critical" 587027614473.dkr.ecr.us-east-1.amazonaws.com/cicd-integrate-clair_and_ecr:latest
+      - clair-scanner --ip 54.209.191.96 -r clair_report.json -l clair_log.json --threshold="Low" 587027614473.dkr.ecr.us-east-1.amazonaws.com/cicd-integrate-clair_and_ecr:latest
       ## || (echo "clair-scanner failed" && exit 1)
       - echo Clair scanning completed
       - echo Updating kubeconfig...
